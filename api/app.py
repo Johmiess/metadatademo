@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 from google import genai
 from google.genai import types
-import pandas as pd
+import csv
 from prompts import DATA_LIBRARIAN_PROMPT
 
 load_dotenv()
@@ -51,9 +51,10 @@ def upload_and_generate():
     try:
         file_bytes = file.read()
         
-        # Extract headers using pandas
-        df = pd.read_csv(io.BytesIO(file_bytes), nrows=0)
-        headers = df.columns.tolist()
+        # Extract headers using built-in csv module
+        file_text = file_bytes.decode('utf-8-sig', errors='replace')
+        reader = csv.reader(io.StringIO(file_text))
+        headers = next(reader, [])
 
         # Upload to Supabase Storage
         file_ext = file.filename.split('.')[-1]
