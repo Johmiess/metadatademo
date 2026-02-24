@@ -143,7 +143,11 @@ def search_repository():
             response = supabase.table('dataset_metadata').select("*").order("created_at", desc=True).limit(50).execute()
         else:
             # Supabase ilike on multiple fields using or
-            response = supabase.table('dataset_metadata').select("*").or_(f"title.ilike.%{query}%,author.ilike.%{query}%,description.ilike.%{query}%").order("created_at", desc=True).execute()
+            # We must wrap the value in double quotes and avoid injecting raw double quotes from query
+            safe_query = query.replace('"', '""')
+            response = supabase.table('dataset_metadata').select("*").or_(
+                f'title.ilike."%{safe_query}%",author.ilike."%{safe_query}%",description.ilike."%{safe_query}%"'
+            ).order("created_at", desc=True).execute()
         
         return jsonify(response.data), 200
     except Exception as e:
