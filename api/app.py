@@ -9,7 +9,7 @@ from supabase import create_client, Client
 from google import genai
 from google.genai import types
 import csv
-from prompts import DATA_LIBRARIAN_PROMPT
+from .prompts import DATA_LIBRARIAN_PROMPT
 
 load_dotenv()
 
@@ -82,7 +82,17 @@ def upload_and_generate():
         )
         
         try:
-            metadata_json = json.loads(response.text)
+            # Clean up the output in case Gemini added markdown code blocks
+            clean_text = response.text.strip()
+            if clean_text.startswith("```json"):
+                clean_text = clean_text[7:]
+            if clean_text.startswith("```"):
+                clean_text = clean_text[3:]
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
+            
+            metadata_json = json.loads(clean_text)
         except json.JSONDecodeError:
             print("Failed to parse Gemini output:", response.text)
             return jsonify({"error": "Failed to generate structured metadata from AI"}), 500
