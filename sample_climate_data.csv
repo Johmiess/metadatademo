@@ -1,0 +1,7 @@
+date,city,temperature_c,humidity_pct,wind_speed_kmh,air_quality_index
+2023-01-01,New York,2.5,60,15,45
+2023-01-02,New York,0.8,65,22,48
+2023-01-01,Los Angeles,15.2,40,8,60
+2023-01-02,Los Angeles,16.0,42,10,65
+2023-01-01,London,5.5,80,12,30
+2023-01-02,London,6.1,78,14,35
